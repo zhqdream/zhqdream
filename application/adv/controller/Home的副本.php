@@ -245,7 +245,8 @@ class Home extends Base
     }
 
     /**
-     * @desc : 测试
+     * @desc : 测试git
+     * @date : 2018/05
      */
     public function test(){
         
