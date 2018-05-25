@@ -249,6 +249,6 @@ class Home extends Base
      * @date : 2018/05
      */
     public function test(){
-        echo 333;
+        echo 333555;
     }
 }
