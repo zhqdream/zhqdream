@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 行车轨迹</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="__STATIC__/adv/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="__STATIC__/adv/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <!-- Example Events -->
+                    <div class="example-wrap">
+                        <h4 class="example-title">设备列表</h4>
+                        <div class="example">
+                            <div class="alert alert-success" id="examplebtTableEventsResult" role="alert">
+                                显示所以的设备列表，可以选择某台设备进行查询设备轨迹
+                            </div>
+                            <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                <button type="button" class="btn btn-outline btn-default" data-toggle="modal" data-target="#myModal">
+                                    <i class="glyphicon glyphicon-search" aria-hidden="true"></i>
+                                </button>
+
+                                <button style="margin-left: 10px" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><b id="querylselect">搜索类型</b> <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a data-id="1">设备序列号</a>
+                                    </li>
+                                    <li><a data-id="2">设备ICCID</a>
+                                    </li>
+                                    <li><a data-id="3">设备IMEI</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <table id="exampleTableEvents" data-height="400" data-mobile-responsive="true">
+                                <thead>
+                                <tr>
+                                    <th data-field="state" data-checkbox="true"></th>
+                                    <th data-field="id">ID</th>
+                                    <th data-field="device_id">设备号</th>
+                                    <th data-field="car_model">车型</th>
+                                    <th data-field="car_brand">品牌</th>
+                                    <th data-field="mcu_version">mcu版本</th>
+                                    <th data-field="address">最后一次的位置</th>
+                                    <th data-field="opt">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- End Example Events -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+</div>
+<!--搜索条件-->
+<div class="modal inmodal" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                </button>
+                <i class="fa fa-tripadvisor modal-icon"></i>
+                <h4 class="modal-title">筛选数据</h4>
+                <small class="font-bold">您可以根据条件进行筛选</small>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal m-t" id="customerForm">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">搜索类型：</label>
+                        <div class="col-sm-8">
+                            <div class="checkbox checkbox-inline" style="width: 30%;">
+                                <input type="radio" id="inlineCheckbox1" name="searchid" value="1">
+                                <label for="inlineCheckbox1" style="padding-left: 0">按厂商</label>
+                            </div>
+                            <div class="checkbox checkbox-inline" style="width: 30%;">
+                                <input type="radio" id="inlineCheckbox2" name="searchid" value="2">
+                                <label for="inlineCheckbox2" style="padding-left: 0">按厂商型号</label>
+                            </div>
+                            <div class="checkbox checkbox-inline" style="width: 30%;">
+                                <input type="radio" id="inlineCheckbox3" name="searchid" value="3">
+                                <label for="inlineCheckbox3" style="padding-left: 0">按区域</label>
+                            </div>
+                            <div class="checkbox checkbox-inline" style="width: 30%;">
+                                <input type="radio" id="inlineCheckbox4" name="searchid" value="4">
+                                <label for="inlineCheckbox4" style="padding-left: 0">按车型</label>
+                            </div>
+                            <div class="checkbox checkbox-inline" style="width: 30%;">
+                                <input type="radio" id="inlineCheckbox5" name="searchid" value="5">
+                                <label for="inlineCheckbox5" style="padding-left: 0">按状态</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="searareainfo">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary carsearch">搜索</button>
+                    </div>
+                    <input type="hidden" id="seartypestr">
+                    <input type="hidden" id="dwhere" value="{$dwhere}">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--设备详情-->
+<div class="modal inmodal" id="devmyModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                </button>
+                <i class="fa fa-android modal-icon"></i>
+                <h4 class="modal-title">设备详情</h4>
+                <small class="font-bold">您可以查看该设备具体信息</small>
+            </div>
+            <div class="modal-body">
+                <div class="ibox-content no-padding">
+                    <ul class="list-group" style="font-size: 14px">
+                        <li class="list-group-item">
+                            <i class="fa fa-android">设备序列号：</i><b style="float: right" id="device_id"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            <i class="fa fa-rotate-right">ICCID号：</i><b style="float: right" id="iccid"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            <i class="fa fa-italic">IMEI号：</i><b style="float: right" id="imei"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            <i class="fa fa-italic">车架号：</i><a data-toggle='modal' data-id='34'  style="float: right" id="vin"></a>
+                        </li>
+                        <li class="list-group-item ">
+                            <i class="fa fa-medium">厂商：</i><b style="float: right" id="channel"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            <i class="fa fa-automobile">车型：</i><b style="float: right" id="car_model"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            <i class="fa fa-registered">mcu版本：</i><b style="float: right" id="mcu"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            <i class="fa fa-flag">svc版本：</i><b style="float: right" id="svc"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            <i class="fa fa-anchor">最后一次的位置：</i><b style="float: right;font-size: 12px" id="address"></b>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--车辆信息详情-->
+<div class="modal inmodal" id="carinfomodel" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                </button>
+                <i class="fa fa-android modal-icon"></i>
+                <h4 class="modal-title">车辆信息详情</h4>
+                <small class="font-bold">您可以查看该车辆信息详情</small>
+            </div>
+            <div class="modal-body">
+                <div class="ibox-content no-padding">
+                    <ul class="list-group" style="font-size: 14px">
+                        <li class="list-group-item">
+                            车架号：<b style="float: right" id="carvin"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            车辆品牌：<b style="float: right" id="manufacturer"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            车辆商标：<b style="float: right" id="brand"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            车型：<b  style="float: right" id="cartype"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            名称：<b style="float: right" id="name"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            年份：<b style="float: right" id="yeartype"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            排放标准：<b style="float: right" id="environmentalstandards"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            车辆油耗：<b style="float: right" id="comfuelconsumption"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            发动机：<b style="float: right" id="engine"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            变速箱：<b style="float: right" id="gearbox"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            驱动方式：<b style="float: right" id="drivemode"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            车身：<b style="float: right" id="carbody"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            前轮胎尺寸：<b style="float: right" id="fronttiresize"></b>
+                        </li>
+                        <li class="list-group-item ">
+                            后轮胎尺寸：<b style="float: right" id="reartiresize"></b>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 全局js -->
+<script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+<script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- Peity -->
+<script src="__STATIC__/adv/js/demo/bootstrap-table-cartrack.js"></script>
+<!-- Sweet alert -->
+<script src="__STATIC__/adv/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+<!-- jQuery Validation plugin javascript-->
+<script src="__STATIC__/adv/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/validate/messages_zh.min.js"></script>
+<script src="__STATIC__/adv/js/demo/form-validate-demo.js?v=1.0"></script>
+
+<script src="__STATIC__/adv/js/plugins/layer/layer.min.js"></script>
+<script src="__STATIC__/adv/js/public.js"></script>
+<script>
+    function trackloding(device_id,where) {
+        layer.load(1,{ // 此处1没有意义，随便写个东西
+            icon: 1, // 0~2 ,0比较好看
+            shade: [0.7,'black'] // 黑色透明度0.5背景
+        });
+        window.location.href="/index/adv/Deviceanalyze/tracklist/device_id/"+device_id+'/where/'+where;
+    }
+    //查看设备详情
+    function deviceinfo(deviceid) {
+        $("#devmyModal").modal("show");
+        $.ajax({
+            url:"/index/adv/Deviceanalyze/getdevicedetail",
+            type:"post",
+            dataType:"json",
+            data:{
+                device_id:deviceid
+            },
+            success:function(result){
+                $('#device_id').text(result.device_id);
+                $('#iccid').text(result.iccid ? result.iccid : '暂未获取');
+                $('#vin').text(result.vin ? result.vin : '暂未获取');
+                $('#imei').text(result.imei);
+                $('#channel').text(result.channel);
+                $('#mcu').text(result.mcu_version);
+                $('#car_model').text(result.car_model);
+                $('#svc').text(result.svc_version_name);
+                $('#address').text(result.address);
+            },
+            error:function() {
+                swal("服务器错误", "操作未成功，请重新操作！", "error");
+            }
+        });
+    }
+</script>
+
+</body>
+
+</html>

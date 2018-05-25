@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - Bootstrap Table</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="__STATIC__/adv/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="__STATIC__/adv/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <!-- Example Events -->
+                    <div class="example-wrap">
+                        <h4 class="example-title">厂商管理</h4>
+                        <div class="example">
+                            <div class="alert alert-success" id="examplebtTableEventsResult" role="alert">
+                                显示当前系统厂商列表，可根据"厂商"进行筛选！
+                            </div>
+                            <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                <button type="button" class="btn btn-outline btn-default" data-toggle="modal" data-target="#myModal">
+                                    <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline btn-default userupd" data-toggle="modal" data-target="#updModal">
+                                    <i class="glyphicon glyphicon-pencil" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline btn-default manudel">
+                                    <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <table id="exampleTableEvents" data-height="400" data-mobile-responsive="true">
+                                <thead>
+                                <tr>
+                                    <th data-field="state" data-checkbox="true"></th>
+                                    <th data-field="id">ID</th>
+                                    <th data-field="customer_name">厂商名称</th>
+                                    <th data-field="customer_phone">厂商手机号</th>
+                                    <th data-field="customer_address">厂商地址</th>
+                                    <th data-field="add_time">添加时间</th>
+                                    <th data-field="opt">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- End Example Events -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+</div>
+
+<!--添加厂商-->
+<div class="modal inmodal" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                </button>
+                <i class="fa fa-medium modal-icon"></i>
+                <h4 class="modal-title">添加厂商</h4>
+                <small class="font-bold">添加厂商时请选择厂商型号</small>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal m-t" id="customerForm" method="post" action="/index/adv/log/add_customer">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">厂商名称：</label>
+                        <div class="col-sm-8">
+                            <input id="cus_name" name="customer_name" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">厂商电话：</label>
+                        <div class="col-sm-8">
+                            <input id="cus_phone" name="customer_phone" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">厂商地址：</label>
+                        <div class="col-sm-8">
+                            <input id="cus_address" name="customer_address" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">厂商型号：</label>
+                        <div class="col-sm-8">
+                            {volist name="maunlist" id="list"}
+                            <div class="checkbox checkbox-inline" style="width: 40%;">
+                                <input type="checkbox" id="inlineCheckbox{$list.id}" name="customer_id[]" value="{$list.id}">
+                                <label for="inlineCheckbox{$list.id}"> {$list.customer_name} </label>
+                            </div>
+                            {/volist}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--修改厂商信息-->
+<div class="modal inmodal" id="updModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                </button>
+                <i class="fa fa-medium modal-icon"></i>
+                <h4 class="modal-title">修改厂商信息</h4>
+                <small class="font-bold">您可以为修改该厂商名称，厂商手机号，厂商地址</small><br>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal m-t" id="updsignupForm" method="post" action="/index/adv/log/update_customerinfo">
+                    <input type="hidden" name="id" id="manuid">
+                    <input type="hidden" name="mobile" id="mobile">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">厂商名称：</label>
+                        <div class="col-sm-8">
+                            <input id="customer_name" name="customer_name" class="form-control" type="text" aria-required="true" aria-invalid="true" class="error">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">厂商电话：</label>
+                        <div class="col-sm-8">
+                            <input id="customer_phone" name="customer_phone" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">厂商地址：</label>
+                        <div class="col-sm-8">
+                            <input id="customer_address" name="customer_address" class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 全局js -->
+<script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+<script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- Peity -->
+<script src="__STATIC__/adv/js/demo/bootstrap-table-customergroup.js"></script>
+<!-- Sweet alert -->
+<script src="__STATIC__/adv/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+<!-- jQuery Validation plugin javascript-->
+<script src="__STATIC__/adv/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/validate/messages_zh.min.js"></script>
+<script src="__STATIC__/adv/js/demo/form-validate-demo.js?v=1.0"></script>
+
+<script src="__STATIC__/adv/js/plugins/layer/layer.min.js"></script>
+<script src="__STATIC__/adv/js/public.js"></script>
+
+</body>
+
+</html>

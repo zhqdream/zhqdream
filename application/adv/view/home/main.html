@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>{$web_title}</title>
+    <link rel="shortcut icon" href="__STATIC__/adv/img/reglink.ico">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+
+    <link rel="shortcut icon" href="reglink.ico">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+    <script src="../../../../../../../../Users/dream/Desktop/loginfile/1.9.1jquery.min.js"></script>
+</head>
+<body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+    <div id="wrapper">
+        <!--左侧导航开始-->
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="nav-close"><i class="fa fa-times-circle"></i>
+            </div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li class="nav-header">
+                        <div class="dropdown profile-element">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="clear">
+                                    <span class="block m-t-xs" style="font-size:17px;">
+                                        <i class="fa fa-area-chart"></i>
+                                        <strong class="font-bold">{$web_title}</strong>
+                                    </span>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="logo-element">{$web_title}
+                        </div>
+                    </li>
+                    {volist name="$menu" id="menulist"}
+                    <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                        <span class="ng-scope">{$menulist.title}</span>
+                    </li>
+                    {if condition="empty($menulist.children) neq true"}
+                    {volist name="$menulist.children" id="childrenlist"}
+                    <li>
+                        <a class="J_menuItem" onclick="loding()" href="{$childrenlist.href}">
+                            <i class="{$childrenlist.icon}"></i>
+                            <span class="nav-label">{$childrenlist.title}</span>
+                            {if condition="$role_id == 1"}
+                            {if condition="$childrenlist.id==13"}
+                            <span class="label label-warning pull-right">{$childrenlist.count}</span>
+                            {else /}
+                            <span class="label label-success pull-right">{$childrenlist.count}</span>
+                            {/if}
+                            {/if}
+                        </a>
+                    </li>
+                    {/volist}
+                    {/if}
+                    {/volist}
+                </ul>
+            </div>
+        </nav>
+        <!--左侧导航结束-->
+        <!--右侧部分开始-->
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row border-bottom" style="margin-bottom: 0">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0;background:#383838">
+                    <div class="navbar-header" style="width: 45%">
+                        <a class="navbar-minimalize minimalize-styl-2 btn btn-info ">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                    </div>
+                    <span style="line-height: 50px;color: white;font-weight: bold;"><i class="fa fa-music fa-spin"></i>&nbsp;&nbsp;欢迎您登录：<b style="color: green">{$role_name}</b></span>
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li class="dropdown">
+                            <a class="dropdown-toggle count-info" data-toggle="dropdown">
+                                <i class="fa fa-desktop"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-alerts">
+                                <li>
+                                    <div class="text-center link-block">
+                                        <a class="J_menuItem" href="/index/adv/login/logOut">
+                                            <strong>退出系统 </strong>
+                                            <!--<i class="fa fa-desktop"></i>-->
+                                        </a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="row J_mainContent" id="content-main">
+                <iframe id="J_iframe" width="100%" height="100%" src="/index/adv/home/index" frameborder="0" data-id="index_v1.html" seamless></iframe>
+            </div>
+        </div>
+        <!--右侧部分结束-->
+    </div>
+
+    <!-- 全局js -->
+    <script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="__STATIC__/adv/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="__STATIC__/adv/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="__STATIC__/adv/js/plugins/layer/layer.min.js"></script>
+
+    <!-- 自定义js -->
+    <script src="__STATIC__/adv/js/hAdmin.js?v=4.1.0"></script>
+    <script type="text/javascript" src="__STATIC__/adv/js/index.js"></script>
+
+    <!-- 第三方插件 -->
+    <script src="__STATIC__/adv/js/plugins/pace/pace.min.js"></script>
+    <script>
+        function loding() {
+            top.layer.load(1,{ // 此处1没有意义，随便写个东西
+                icon: 1, // 0~2 ,0比较好看
+                shade: [0.7,'black'] // 黑色透明度0.5背景
+            });
+        }
+    </script>
+
+</body>
+
+</html>

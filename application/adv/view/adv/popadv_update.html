@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>修改弹窗广告</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__STATIC__/adv/layui/css/layui.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="__STATIC__/adv/css/plugins/webuploader/webuploader.css">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+
+    <link href="__STATIC__/adv/css/plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="__STATIC__/adv/css/imageHotAreaStyle.css">
+
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeIn">
+        <div class="row">
+            <div class="col-sm-12" id="advinfo">
+                <div class="alert alert-success" id="examplebtTableEventsResult" role="alert">
+                    您可以进行修改弹窗广告，修改之后，将重新进行下发！
+                </div>
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>修改弹窗广告数据</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="advsignupForm" method="post" action="/index/adv/adv/update_popadvinfo">
+                            <input type="hidden" value="{$popadvinfo.id}" name="id">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">广告类别：</label>
+                                <div class="col-sm-8">
+                                    <div class="radio">
+                                        <label style="width: 80px">
+                                            <input type="radio" class="radio" name="adv_category" onclick="selectCategory(1)" value="1" {if condition="$popadvinfo.adv_category == 1"} checked {/if}>图片
+                                        </label>
+                                        <label style="width: 80px">
+                                            <input type="radio" class="radio" name="adv_category" onclick="selectCategory(2)" value="2" {if condition="$popadvinfo.adv_category == 2"} checked {/if}>文字
+                                        </label>
+                                        <label style="width: 80px">
+                                            <input type="radio" class="radio" name="adv_category" onclick="selectCategory(3)" value="3" {if condition="$popadvinfo.adv_category == 3"} checked {/if}>语音
+                                        </label>
+                                    </div>
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>广告类别：选中该广告类别后，才可以进行定制广告，通过不同的类型，展现方式也不同！</span>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">广告标题：</label>
+                                <div class="col-sm-8">
+                                    <input id="adv_title" name="adv_title" class="form-control" value="{$popadvinfo.adv_title}" type="text" aria-required="true" aria-invalid="false" class="valid">
+                                </div>
+                            </div>
+                            <div class="form-group" style="display: none" id="fromadvdesc">
+                                <label class="col-sm-3 control-label" id="advtitle"></label>
+                                <div class="col-sm-8">
+                                    <textarea id="adv_desc" name="adv_desc" class="form-control" required="" aria-required="true">{$popadvinfo.adv_desc}</textarea>
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>广告内容用于语音播报或者直接显示文字！</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="display: none" id="fromadvimg">
+                                <label class="col-sm-3 control-label">广告图片：</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control m-b" name="adv_img_group" id="imggroupid" onchange="changeimggroup()">
+                                        <option value="">请选择广告组图片</option>
+                                        {volist name="imggroup" id="imglist"}
+                                        <option data-img="{$imglist.img_url}" value="{$imglist.id}" id="{$imglist.id}" {if condition="$popadvinfo.adv_img_group == $imglist.id"} selected {/if}>{$imglist.group_title}</option>
+                                        {/volist}
+                                    </select>
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>广告图片：该广告图片用于展示</span>
+                                </div>
+                                <input type="hidden" name="advxy" id="advxy">
+                            </div>
+
+                            <div class="form-group" style="display: none" id="fromadvurl">
+                                <label class="col-sm-3 control-label">跳转地址：</label>
+                                <div class="col-sm-8">
+                                    <input id="adv_url" name="adv_url" class="form-control" type="text" value="{$popadvinfo.adv_url}" aria-required="true" aria-invalid="false" class="valid">
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>跳转地址：该地址附属在图片上，如果填写，可以进行跳转</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">播放厂商：</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control m-b" name="adv_manufacturer">
+                                        {volist name="manu" id="manulist"}
+                                        <option id="{$manulist.customer}" value="{$manulist.customer}" {if condition="$popadvinfo.adv_manufacturer == $manulist.customer"} selected {/if}>{$manulist.customer_name}</option>
+                                        {/volist}
+                                    </select>
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>播放厂商：该广告用于投放的厂商</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">投放区域：</label>
+                                <div class="col-sm-3">
+                                    <select class="form-control m-b" id="adv_province" name="adv_province" onchange="selectcity()">
+                                        <option value="">请选择投放的城市</option>
+                                        <option value="0" {if condition="$popadvinfo.adv_province==0"} selected {/if}>全部</option>
+                                        {volist name="area" id="arealist"}
+                                        <option value="{$arealist.name}" area-code="{$arealist.code}" {if condition="$popadvinfo.adv_province == $arealist.name"} selected {/if}>{$arealist.name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                                <div class="col-sm-3" style="display: none" id="city">
+                                    <select class="form-control m-b" id="adv_city" name="adv_city">
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">广告状态：</label>
+                                <div class="col-sm-8">
+                                    <div class="radio">
+                                        <label style="width: 50px">
+                                            <input type="radio" class="radio" name="adv_status" value="1" {if condition="$popadvinfo.adv_status == 1"} checked {/if}>开启
+                                        </label>
+                                        <label style="width: 50px">
+                                            <input type="radio" class="radio" name="adv_status" value="2" {if condition="$popadvinfo.adv_status == 2"} checked {/if}>关闭
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">失效时间：</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control layer-date" name="end_time" placeholder="YYYY-MM-DD hh:mm:ss" value="{$popadvinfo.end_time}" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-8 col-sm-offset-3">
+                                    <button class="btn btn-primary" type="submit">提交</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="blueimp-gallery" class="blueimp-gallery">
+        <div class="slides"></div>
+        <h3 class="title"></h3>
+        <a class="prev">‹</a>
+        <a class="next">›</a>
+        <a class="close">×</a>
+        <a class="play-pause"></a>
+        <ol class="indicator"></ol>
+    </div>
+
+
+    <!--图片预览区-->
+    <div class="modal inmodal" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" style="width: 800px">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                    </button>
+                    <small class="font-bold">您可以进行拖动下面的图片进行选择在屏幕上显示的位置！</small>
+                </div>
+                <div class="modal-body" style="height: 545px;background:black" id="imgMap">
+                    <input id="popimgurl" type="hidden">
+                    <div class="hot_area" id = "areaContent">
+                        <!-- 2.图片展示部分：-->
+                        <div class="" name="imageMap" id="image_map">
+                            <img  ref="imageMap" id="photo"/>
+                        </div>
+                        <!--3.添加热区对应编辑链接列表渲染部分，目前需两者选一：
+                         1)tablebody样式：-->
+                        <table><tbody id="areaItems"> </tbody></table>
+                        <!-- 5.热区数据存储（隐藏）：-->
+                        <input type="hidden" class="" id="hotAreas" name="hotAreas"  value=''>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__STATIC__/adv/js/jquery.image-maps5.0.js?v=1.0"></script>
+
+    <script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+    <script type="text/javascript" src="__STATIC__/adv/layui/layui.all.js"></script>
+
+
+    <!-- jQuery Validation plugin javascript-->
+    <script src="__STATIC__/adv/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="__STATIC__/adv/js/plugins/validate/messages_zh.min.js"></script>
+    <script src="__STATIC__/adv/js/demo/form-validate-demo.js?v=1.0"></script>
+
+    <!-- layerDate plugin javascript -->
+    <script src="__STATIC__/adv/js/plugins/layer/laydate/laydate.js"></script>
+    <script>
+
+        //预览广告图
+        function changeimggroup() {
+            if($("#imggroupid option:selected").val()==''){
+                return false;
+            }
+            $('.fancybox').children().remove();
+            var img_url = $("#imggroupid option:selected").attr("data-img");
+            $('#myModal').modal('show');
+            var arr = img_url.split(';');
+            $('#popimgurl').val(arr[0]);
+            //热点设置
+            var setting = {
+                maxAmount:5,
+                tag:'tr',
+                params:{
+                    //'areaLink':'添加热区时的默认值',
+                    //'areaType':'添加热区时的默认值'
+                },
+                domCallBack:function(params){
+                }
+            }
+            var adv_xy = "{$popadvinfo.adv_xy}";
+            //初始化加载
+            var areas = "[{'areaTitle':'投放点','areaLink':'','areaMapInfo':'"+adv_xy+"'}]";
+            $("#hotAreas").val(areas);
+            imageMaps.proportionNoSameManual("__STATIC__/adv/img/navi.jpg",setting,1,1,true);
+            $('#fromadvurl').show();
+
+        }
+        //查看点击广告分类
+        function selectCategory(id) {
+            //图片类型
+            if(id==1){
+                $('#fromadvimg').show();
+                $('#fromadvdesc').hide();
+                if($('#advxy').val()){
+                    $('#fromadvurl').show();
+                }
+            }else if(id==2){
+                //文字类型
+                $('#advtitle').text('文字内容：');
+                $('#fromadvimg').hide();
+                $('#fromadvdesc').show();
+                $('#fromadvurl').hide();
+            }else{
+                //语音类型
+                $('#advtitle').text('播报内容：');
+                $('#fromadvimg').hide();
+                $('#fromadvdesc').show();
+                $('#fromadvurl').hide();
+            }
+        }
+        //通过广告显示数据
+        var categoryid = $("input[name='adv_category']:checked").val();
+        //图片类型
+        if(categoryid==1){
+            changeimggroup();
+            $('#fromadvimg').show();
+            $('#fromadvdesc').hide();
+            if($('#advxy').val()){
+                $('#fromadvurl').show();
+            }
+        }else if(categoryid==2){
+            //文字类型
+            $('#advtitle').text('文字内容：');
+            $('#fromadvimg').hide();
+            $('#fromadvdesc').show();
+            $('#fromadvurl').hide();
+        }else{
+            //语音类型
+            $('#advtitle').text('播报内容：');
+            $('#fromadvimg').hide();
+            $('#fromadvdesc').show();
+            $('#fromadvurl').hide();
+        }
+        selectcity();
+        //获取城市
+        function selectcity() {
+            var code = $("#adv_province option:selected").attr('area-code');
+            var protext = $("#adv_province option:selected").text();
+            var adv_city = "{$popadvinfo.adv_city}";
+            $('#adv_city').children().remove();
+            if(protext=='全部'){
+                $('#city').hide();
+                return false;
+            }
+            $.ajax({
+                url:"/index/adv/adv/getcity",
+                type:"post",
+                dataType:"json",
+                data:{
+                    code:code
+                },
+                success:function(result){
+                    var result = $.parseJSON(result);
+                    var cityinfo = result.content;
+                    if(result.code==200){
+                        var citytext =  protext.indexOf('市');
+                        $('#city').show();
+                        var str = '';
+                        if(citytext==-1){
+                            var str = '';
+                            for(var i=0;i<cityinfo.length;i++){
+                                str+='<option value="'+cityinfo[i].name+'">'+cityinfo[i].name+'</option>';
+                            }
+                        }else{
+                            str+='<option value="'+protext+'">'+protext+'</option>';
+                        }
+                        $('#adv_city').append(str);
+                        $('#adv_city option').each(function(){
+                            if(this.value==adv_city){
+                                $(this).attr("selected","selected");
+                            }
+                        });
+                    }else{
+                        $('#city').hide();
+                    }
+                },
+                error:function() {
+                    $('#city').hide();
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>

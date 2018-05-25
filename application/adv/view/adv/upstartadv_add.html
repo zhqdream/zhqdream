@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>添加开机广告</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__STATIC__/adv/layui/css/layui.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="__STATIC__/adv/css/plugins/webuploader/webuploader.css">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+
+    <link href="__STATIC__/adv/css/plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeIn">
+        <div class="row">
+            <div class="col-sm-12" id="advinfo">
+                <div class="alert alert-success" id="examplebtTableEventsResult" role="alert">
+                    添加开机广告时，必须先要添加广告图片组，然后才可以进行添加！
+                </div>
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>添加开机广告数据</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="advsignupForm" method="post" action="/index/adv/adv/add_upstartadv">
+                            <input type="hidden" name="adv_img" id="oss_url">
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">广告标题：</label>
+                                <div class="col-sm-8">
+                                    <input id="adv_title" name="adv_title" class="form-control" type="text" aria-required="true" aria-invalid="false" class="valid">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">广告描述：</label>
+                                <div class="col-sm-8">
+                                    <input id="adv_desc" name="adv_desc" class="form-control" type="text" aria-required="true" aria-invalid="false" class="valid">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">广告图片：</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control m-b" name="adv_img_group" id="imggroupid" onchange="changeimggroup()">
+                                        <option value="">请选择广告组图片</option>
+                                        {volist name="imggroup" id="imglist"}
+                                        <option data-img="{$imglist.img_url}" value="{$imglist.id}" id="{$imglist.id}">{$imglist.group_title}</option>
+                                        {/volist}
+                                    </select>
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>广告图片：该广告图片用于展示</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">播放厂商：</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control m-b" name="adv_manufacturer">
+                                        {volist name="manu" id="manulist"}
+                                        <option id="{$manulist.customer}" value="{$manulist.customer}">{$manulist.customer_name}</option>
+                                        {/volist}
+                                    </select>
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>播放厂商：该广告用于投放的厂商</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">投放区域：</label>
+                                <div class="col-sm-3">
+                                    <select class="form-control m-b" id="adv_province" name="adv_province" onchange="selectcity()">
+                                        <option value="">请选择投放的城市</option>
+                                        <option value="0">全部</option>
+                                        {volist name="area" id="arealist"}
+                                        <option value="{$arealist.name}" area-code="{$arealist.code}">{$arealist.name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                                <div class="col-sm-3" style="display: none" id="city">
+                                    <select class="form-control m-b" id="adv_city" name="adv_city">
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">循环时间：</label>
+                                <div class="col-sm-8">
+                                    <input id="loop_time" name="loop_time" class="form-control" type="number">
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>循环时间：图片播放的间隔时间,单位：S</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">播放次数：</label>
+                                <div class="col-sm-8">
+                                    <input id="play_num" name="play_num" class="form-control" value="0" type="number">
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>播放次数：该广告累计播放次数，如果为0，将不限制</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">广告状态：</label>
+                                <div class="col-sm-8">
+                                    <div class="radio">
+                                        <label style="width: 50px">
+                                            <input type="radio" class="radio" name="adv_status" value="1" checked>开启
+                                        </label>
+                                        <label style="width: 50px">
+                                            <input type="radio" class="radio" name="adv_status" value="2">关闭
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">失效时间：</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control layer-date" name="end_time" placeholder="YYYY-MM-DD hh:mm:ss" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-8 col-sm-offset-3">
+                                    <button class="btn btn-primary" type="submit">提交</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="blueimp-gallery" class="blueimp-gallery">
+        <div class="slides"></div>
+        <h3 class="title"></h3>
+        <a class="prev">‹</a>
+        <a class="next">›</a>
+        <a class="close">×</a>
+        <a class="play-pause"></a>
+        <ol class="indicator"></ol>
+    </div>
+
+
+    <!--图片预览区-->
+    <div class="modal inmodal" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+                    </button>
+                    <i class="fa fa-file-image-o modal-icon"></i>
+                    <h4 class="modal-title">预览图片</h4>
+                    <small class="font-bold">您可以预览该图片组下面的图片</small>
+                </div>
+                <div class="modal-body">
+                    <div class="fancybox">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 全局js -->
+    <script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+    <script src="__STATIC__/adv/js/content.js?v=1.0.0"></script>
+
+
+    <!-- Web Uploader -->
+    <script type="text/javascript">
+        // 添加全局站点信息
+        var BASE_URL = 'js/plugins/webuploader';
+    </script>
+    <script type="text/javascript" src="__STATIC__/adv/layui/layui.all.js"></script>
+    <script src="__STATIC__/adv/js/plugins/webuploader/webuploader.min.js"></script>
+
+
+    <!-- jQuery Validation plugin javascript-->
+    <script src="__STATIC__/adv/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="__STATIC__/adv/js/plugins/validate/messages_zh.min.js"></script>
+    <script src="__STATIC__/adv/js/demo/form-validate-demo.js?v=1.0"></script>
+    <!-- layerDate plugin javascript -->
+    <script src="__STATIC__/adv/js/plugins/layer/laydate/laydate.js"></script>
+
+    <!-- blueimp gallery -->
+    <script src="__STATIC__/adv/js/plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
+    <script>
+        //预览图片
+        function changeimggroup() {
+            if($("#imggroupid option:selected").val()==''){
+                return false;
+            }
+            $('.fancybox').children().remove();
+            var img_url = $("#imggroupid option:selected").attr("data-img");
+            $('#myModal').modal('show');
+            var arr = img_url.split(';');
+            var str = '';
+            for(var i=0;i<arr.length;i++){
+                str+='<a style="margin-left: 5px" href="'+arr[i]+'" data-gallery=""><img src="'+arr[i]+'"></a>';
+            }
+            $('.fancybox').append(str);
+        }
+        //获取城市
+        function selectcity() {
+            var code = $("#adv_province option:selected").attr('area-code');
+            var protext = $("#adv_province option:selected").text();
+            if(protext=='全部'){
+                $('#city').hide();
+                return false;
+            }
+            $('#adv_city').children().remove();
+            $.ajax({
+                url:"/index/adv/adv/getcity",
+                type:"post",
+                dataType:"json",
+                data:{
+                    code:code
+                },
+                success:function(result){
+                    var result = $.parseJSON(result);
+                    var cityinfo = result.content;
+                    if(result.code==200){
+                        var citytext =  protext.indexOf('市');
+                        $('#city').show();
+                        var str = '';
+                        if(citytext==-1){
+                            var str = '';
+                            for(var i=0;i<cityinfo.length;i++){
+                                str+='<option value="'+cityinfo[i].name+'">'+cityinfo[i].name+'</option>';
+                            }
+                        }else{
+                            str+='<option value="'+protext+'">'+protext+'</option>';
+                        }
+                        $('#adv_city').append(str);
+                    }else{
+                        $('#city').hide();
+                    }
+                },
+                error:function() {
+                    $('#city').hide();
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>

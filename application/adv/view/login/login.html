@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>用户登录-锐捷科技</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link href="__STATIC__/adv/layui/css/layui.css" rel="stylesheet">
+    <link rel="shortcut icon" href="__STATIC__/adv/img/reglink.ico">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <script>if(window.top !== window.self){ window.top.location = window.location;}</script>
+</head>
+
+<body class="gray-bg" style="background:url(__STATIC__/adv/img/adv_bag.png) no-repeat center center fixed;-webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;">
+
+    <div class="middle-box text-center loginscreen  animated fadeInDown">
+        <div>
+            <div>
+
+                <h1 class="logo-name"><i class="fa fa-feed"></i></h1>
+
+            </div>
+            <h3>锐捷车联网系统</h3>
+
+            <form class="m-t" role="form" method="post">
+                <div class="form-group">
+                    <input class="layui-input" name="mobile" placeholder="登录的手机号" lay-verify="required" type="text" autocomplete="off" onblur="checkcode()">
+                </div>
+                <div class="form-group">
+                    <input class="layui-input" name="password" placeholder="登录的密码" lay-verify="required" type="password" autocomplete="off">
+                </div>
+                <div class="form-group" style="display: none" id="msgcode">
+                    <input style="width: 60%;float: left" class="layui-input" name="msgcode" placeholder="短信验证码" lay-verify="required" type="text" autocomplete="off">
+                    <div class="code" style="cursor:pointer"><button type="button" class="btn btn-primary msgs" style="width: 116px;height: 38px">点击获取短信</button></div>
+
+                </div>
+                <div class="form-group">
+                    <input style="width: 60%;float: left" class="layui-input" name="code" placeholder="验证码" lay-verify="required" type="text" autocomplete="off">
+                    <div class="code" style="cursor:pointer"><img src="/index/adv/login/captcha" id="captcha" title="点击刷新验证码" onclick="this.src='/index/adv/login/captcha?'+Math.random();" width="116" height="38"></div>
+
+                </div>
+                <button style="padding: 10px 12px;" type="submit" class="btn btn-primary block full-width m-b login_btn">登 录</button>
+                </p>
+            </form>
+        </div>
+    </div>
+</body>
+<script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+<script type="text/javascript" src="__STATIC__/adv/layui/layui.all.js"></script>
+<script>
+    var token = "{$token}";
+    if(token=='tokenerr'){
+        layer.alert('您的账号在其他地方登录，请注意账号安全！', {icon: 7},function(index){
+            layer.close(index);
+        });
+    }
+    //提交表单数据
+    $("form").submit(function(e){
+        var mobile = $("input[name='mobile']").val();
+        var password = $("input[name='password']").val();
+        var code = $("input[name='code']").val();
+        var msgcode = $("input[name='msgcode']").val();
+        if(mobile==''){
+            layer.msg('请填写登录的手机号', {icon: 5});
+            return false;
+        }
+        if(password==''){
+            layer.msg('请输入密码', {icon: 5});
+            return false;
+        }
+        if(code==''){
+            layer.msg('请输入验证码', {icon: 5});
+            return false;
+        }
+        //进行验证用户的登录信息
+        $.ajax({
+            url:"/index/adv/login/checkUser",
+            type:"post",
+            dataType:"json",
+            data:{
+                mobile:mobile,
+                password:password,
+                code:code,
+                msgcode:msgcode
+            },
+            success:function(result){
+                var result = $.parseJSON(result);
+                if(result.code == 200){
+                    window.location.href = "/index/adv/home/main";
+                }else{
+                    if(result.code==1006 || result.code==1007){
+                        $('#msgcode').show();
+                    }else{
+                        $('#msgcode').hide();
+                    }
+                    layer.msg(result.content, {icon: 5});
+                    $("input[name='code']").val('');
+                    $("input[name='msgcode']").val('');
+                    //重新刷新验证码
+                    $("#captcha").click();
+                }
+            },
+            error:function() {
+                layer.msg('系统异常，请重试！', {icon: 5});
+                return false;
+            }
+        });
+        return false;
+
+    });
+    //检测用户是否需要输入短信验证码
+    function checkcode() {
+        var phone = $('input[name="mobile"]').val();
+        $.ajax( {
+            url:'/index/adv/login/checknote',// 跳转到 action
+            data:{
+                mobile : phone,
+            },
+            type:'post',
+            cache:false,
+            dataType:'text',
+            success:function(data) {
+                if(data=='error'){
+                    $('#msgcode').show();
+                }else{
+                    $('#msgcode').hide();
+                }
+
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                layer.msg('服务器错误！', {icon: 5});
+            }
+        });
+    }
+    //获取短信验证码
+    var validCode=true;
+    $(".msgs").click (function  () {
+        var phone = $('input[name="mobile"]').val();
+        if(phone==''){
+            layer.msg('请先输入正确的手机号！', {icon: 5});
+            return;
+        }
+
+        var time=60;
+        var code=$(this);
+        if (validCode) {
+            /* 发送短信验证码 */
+            $.ajax( {
+                url:'/index/adv/login/sendSms',// 跳转到 action
+                data:{
+                    mobile : phone,
+                },
+                type:'post',
+                cache:false,
+                dataType:'text',
+                success:function(data) {
+                    if(data=='ok'){
+                        layer.msg('发送成功，请注意查收！', {icon: 6});
+                    }else{
+                        layer.msg('发送失败，请重新发送！', {icon: 5});
+                    }
+                },
+                error : function(XMLHttpRequest, textStatus, errorThrown) {
+                    layer.msg('发送失败，请联系客服！', {icon: 5});
+                }
+            });
+
+            validCode=false;
+            code.addClass("msgs1");
+            var t=setInterval(function  () {
+                time--;
+                code.html(time+"秒");
+                if (time==0) {
+                    clearInterval(t);
+                    code.html("重新获取");
+                    validCode=true;
+                    code.removeClass("msgs1");
+
+                }
+            },1000)
+        }
+    })
+
+
+</script>
+</html>

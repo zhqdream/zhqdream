@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 车辆流量分析</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="__STATIC__/adv/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="__STATIC__/adv/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <!-- Example Events -->
+                    <div class="example-wrap">
+                        <h4 class="example-title">流量分析</h4>
+                        <div class="example">
+                            <div class="alert alert-success" id="examplebtTableEventsResult" role="alert">
+                                显示车辆流量信息，默认显示<b style="color: red">(近10天的数据)</b>，可通过条件进行筛选
+                            </div>
+                            <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                <div class="btn-group">
+                                    <button data-toggle="dropdown" class="btn btn-default dropdown-toggle"><b id="cardate">选择时间</b> <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" id="cardatesel" style="left: 0">
+                                        <li>
+                                            <a data-id="10">近10天</a>
+                                        </li>
+                                        <li>
+                                            <a data-id="20">近20天</a>
+                                        </li>
+                                        <li>
+                                            <a data-id="30">近1个月</a>
+                                        </li>
+                                        <li>
+                                            <a data-id="182">近半年</a>
+                                        </li>
+                                        <li>
+                                            <a data-id="365">近1年</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="btn-group">
+                                    <button style="margin-left: 10px" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><b id="customerid">厂商型号</b> <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" id="customeridsel">
+                                        <li>
+                                            <a data-id="">全部</a>
+                                        </li>
+                                        {volist name="customer_list" id="cuslist"}
+                                        <li>
+                                            <a data-id="{$cuslist.customer}">{$cuslist.customer}</a>
+                                        </li>
+                                        {/volist}
+                                    </ul>
+                                </div>
+                                <div class="btn-group">
+                                    <button style="margin-left: 10px" data-toggle="dropdown" class="btn btn-success dropdown-toggle onlinequery">查询
+                                    </button>
+                                </div>
+                            </div>
+
+                            <table id="exampleTableEvents"  data-mobile-responsive="true">
+                                <thead>
+                                <tr>
+                                    <th data-field="state" data-checkbox="true"></th>
+                                    <th data-field="id">ID</th>
+                                    <th data-field="device_id">设备号</th>
+                                    <th data-field="iccid">iccid</th>
+                                    <th data-field="channel">厂商</th>
+                                    <th data-field="flow">使用流量</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- End Example Events -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>设备流量使用分析</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-online-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+</div>
+
+<!-- 全局js -->
+<script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+<script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- ECharts -->
+<script type="text/javascript" src="__STATIC__/adv/js/plugins/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="__STATIC__/adv/js/plugins/echarts/china.js"></script>
+
+<!-- Peity -->
+<script src="__STATIC__/adv/js/demo/bootstrap-table-flowanalyze.js"></script>
+<!-- Sweet alert -->
+<script src="__STATIC__/adv/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+<!-- jQuery Validation plugin javascript-->
+<script src="__STATIC__/adv/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="__STATIC__/adv/js/plugins/validate/messages_zh.min.js"></script>
+
+<script src="__STATIC__/adv/js/plugins/layer/layer.min.js"></script>
+<script src="__STATIC__/adv/js/public.js"></script>
+
+</body>
+
+</html>

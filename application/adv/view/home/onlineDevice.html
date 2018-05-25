@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>在线设备统计</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="__STATIC__/adv/img/reglink.ico">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg" style="filter:alpha(opacity=50);-moz-opacity:0.75;-khtml-opacity: 0.75;opacity: 0.75; ">
+<div class="alert alert-success" id="examplebtTableEventsResult" role="alert" style=" position: fixed;width: 100%;z-index: 100000">
+    当前显示设备上线情况，可供参考！
+    <button type="button" class="btn btn-w-m btn-primary">{$querytitle}</button>
+    <button type="button" class="btn btn-w-m btn-info" data-toggle="modal" data-target="#myModal2">点击设置筛选条件</button>
+    <button type="button" class="btn btn-w-m btn-success" onclick="queryall()">查看全部</button>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight" id="datachannel" data-info='{$querychanelacc}' style="padding-top: 70px">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>在线设备数据总览</h5>
+                </div>
+                <input type="hidden" id="role_id" value="{$role_id}">
+                <div class="ibox-content" style="min-height: 193px">
+                        <div class="col-sm-3">
+                            <div class="ibox">
+                                <div class="ibox-content">
+                                    <h3 style="color: red">当前在线车机数：</h3>
+                                    <h2 style="color: red;font-weight: bold" id="onlineDevice"></h2>
+                                    <div id="sparkline1"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="ibox">
+                                <div class="ibox-content">
+                                    <h3 style="color: green">今日上线数：</h3>
+                                    <h2 style="color: green;font-weight: bold" id="onlineToday"></h2>
+                                    <div id="sparkline2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="ibox">
+                                <div class="ibox-content">
+                                    <h3 style="color:#f8ac59">本周活跃总数：</h3>
+                                    <h2 style="font-weight: bold;color: #f8ac59">{$weektotal} 台</h2>
+                                    <div id="sparkline3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="ibox">
+                                <div class="ibox-content">
+                                    <h3 style="color:#1c84c6">总车机数：</h3>
+                                    <h2 style="font-weight: bold;color: #1c84c6">{$devcount} 台</h2>
+                                    <div id="sparkline4"></div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {if condition="$role_id == 1"}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>今日在线设备变化(全部设备)</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-line-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    <input type="hidden" value="{$weekdata}" id="online_week">
+    <input type="hidden" value="{$weeddate}" id="week_date">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>今日设备在线时长分析</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-todayonline-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>近一周设备在线时长分析</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-weekonline-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>近一周在线设备</h5>
+                    <input type="hidden" value="{$online_num}" id="online_num">
+                </div>
+                <div class="ibox-content">
+
+                    <div class="echarts" id="echarts-bar-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal inmodal" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top: 70px">
+    <div class="modal-dialog">
+        <div class="modal-content animated flipInY">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">筛选设置</h4>
+                <small class="font-bold">您可以按条件进行筛选相关数据。</small>
+            </div>
+            <div class="modal-body">
+                {if condition="$role_id == 1"}
+                <div class="form-group">
+                    <label class="control-label">选择厂商后，厂商型号自动识别！</label>
+                    <select class="form-control m-b" name="account" id="selcustomer" onchange="getmanulist()">
+                        <option>请选择厂商</option>
+                        {volist name="$customerlist" id="cuslist"}
+                        <option value="{$cuslist.id}">{$cuslist.customer_name}</option>
+                        {/volist}
+                    </select>
+                    <div class="checkbox" id="selmanu">
+                    </div>
+                </div>
+                {else /}
+                <div class="form-group">
+                    <label class="control-label">请选择厂商型号</label>
+                    <div class="checkbox" id="selmanu">
+                        {volist name="$channel" id="channellist"}
+                        <label style="font-weight: 700;width: 100px"><input type="checkbox" name="channelid" value="{$channellist.customer}">{$channellist.customer}</label>
+                        {/volist}
+                    </div>
+                </div>
+                {/if}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="finddevonline()">查询</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 全局js -->
+<script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+<script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<!-- ECharts -->
+<script src="__STATIC__/adv/js/plugins/echarts/echarts-all.js"></script>
+
+<script type="text/javascript" src="__STATIC__/adv/js/plugins/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="__STATIC__/adv/js/plugins/echarts/china.js"></script>
+
+<!-- 自定义js -->
+<script src="__STATIC__/adv/js/content.js?v=1.0.0"></script>
+
+<!-- Sparkline -->
+<script src="__STATIC__/adv/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+<!-- ECharts demo data -->
+<script src="__STATIC__/adv/js/demo/echarts-demo.js?v=1.5"></script>
+<script src="__STATIC__/adv/js/plugins/layer/layer.min.js"></script>
+
+<script src="__STATIC__/adv/js/public.js"></script>
+
+
+<script>
+    //定时获取在线设备数
+    realOnline();
+    window.setInterval("realOnline()",3000);
+    var role_id = {$role_id};
+    var channelid = {$channelid};
+    var devurl = {$devurl};
+    function realOnline(){
+        //当前在线设备
+        try {
+            if(role_id==1){
+                var channelstr = {$querychanel};
+                if(channelstr){
+                    var channelstrarr = channelstr.split(",");
+                    var channcount = 0;
+                    for(var i=0;i<channelstrarr.length;i++){
+                        $.ajaxSettings.async=false;
+                        $.getJSON(devurl+"/v1/channel/"+channelstrarr[i]+"/online_count", function (data) {
+                            channcount+=data;
+                            $('#onlineDevice').text(channcount+' 台');
+                        });
+                    }
+                }else{
+                    $.getJSON(devurl+"/v1/counter/online_count", function (data) {
+                        $('#onlineDevice').text(data+' 台');
+                    });
+                }
+            }else{
+                var channelarr = channelid.split(",");
+                var channcount = 0;
+                for(var i=0;i<channelarr.length;i++){
+                    $.ajaxSettings.async=false;
+                    $.getJSON(devurl+"/v1/channel/"+channelarr[i]+"/online_count", function (data) {
+                        channcount+=data;
+                        $('#onlineDevice').text(channcount+' 台');
+                    });
+                }
+            }
+        }
+        catch (ex) {
+            $('#onlineDevice').text('--');
+        }
+        //今天累计在线设备
+        try {
+            var channelstr = {$querychanel};
+            if(channelstr){
+                var currentonlincount = {$currentonlincount};
+                $('#onlineToday').text(currentonlincount+' 台');
+            }else{
+                if(role_id==1){
+                    $.getJSON("http://120.78.95.224:8080/v1/counter/today_active_count", function (data) {
+                        $('#onlineToday').text(data+' 台');
+                    });
+                }else{
+                    var currentonlincount = {$currentonlincount};
+                    $('#onlineToday').text(currentonlincount+' 台');
+                }
+            }
+        }
+        catch (ex) {
+            $('#onlineToday').text('--');
+        }
+    }
+    //通过厂商获取厂商型号
+    function getmanulist() {
+        var customer_id = $('#selcustomer option:selected').val();
+        if(customer_id=='请选择厂商'){
+            $('#selmanu').children().remove();
+            return false;
+        }
+        if(customer_id==''){
+            $('#selmanu').children().remove();
+            $("#selmanu").trigger("chosen:updated");
+            return false;
+        }
+        $.ajax({
+            url:"/index/adv/home/getmanulist",
+            type:"post",
+            dataType:"json",
+            data:{
+                customer_id:customer_id,
+            },
+            success:function(result){
+                var result = $.parseJSON(result);
+                var manu = result.content;
+                $('#selmanu').children().remove();
+                if(result.code == 200){
+                    var str = '';
+                    for(var i=0;i<manu.length;i++){
+                        str+='<label style="font-weight: 700;width: 100px"><input type="checkbox" name="channelid" value="'+manu[i].customer+'">'+manu[i].customer+'</label>';
+                    }
+                    $('#selmanu').append(str);
+                }
+            },
+            error:function() {
+                return false;
+            }
+        });
+    }
+    //通过条件筛选在线设备信息
+    function finddevonline() {
+        var id_array=new Array();
+        $('#selmanu input[name="channelid"]:checked').each(function(){
+            id_array.push($(this).val());//向数组中添加元素
+        });
+        var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
+        if(idstr==''){
+            layer.msg('请选择厂商型号进行查询！', {icon: 5});
+            return false;
+        }
+        layer.load(1,{ // 此处1没有意义，随便写个东西
+            icon: 1, // 0~2 ,0比较好看
+            shade: [0.7,'black'] // 黑色透明度0.5背景
+        });
+        window.location.href = "/index/adv/home/onlineDevice?querychanel="+idstr;
+    }
+    //查看全部
+    function queryall() {
+        layer.load(1,{ // 此处1没有意义，随便写个东西
+            icon: 1, // 0~2 ,0比较好看
+            shade: [0.7,'black'] // 黑色透明度0.5背景
+        });
+        window.location.href = "/index/adv/home/onlineDevice";
+    }
+</script>
+
+
+
+</body>
+
+</html>

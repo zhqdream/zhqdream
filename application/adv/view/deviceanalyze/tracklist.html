@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车辆轨迹</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="__STATIC__/adv/css/plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
+
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="__STATIC__/adv/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <!--加载地图-->
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+    <script src="http://webapi.amap.com/maps?v=1.4.6&key=d69b4c124c3fb2c79be6a740a1511dcc"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<body class="gray-bg">
+<div class="col-sm-4" id="trackdetail" style="display:none;z-index: 99999999;opacity:0.8;">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title" style="background-color:#404a59;color: white">
+            <h5>轨迹详情 ({$device_id})</h5>
+        </div>
+        <div class="ibox-content no-padding" style="background-color:#404a59;color: white">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <i class="fa fa-flag" style="color:#66FF00"> 开始位置: </i> <b id="startadd"></b>
+                </li>
+                <li class="list-group-item ">
+                    <i class="fa fa-flag-checkered" style="color: #FF6633"> 结束位置:</i> <b id="endadd"></b>
+                </li>
+                <li class="list-group-item">
+                    <i class="fa fa-hourglass-1" style="color: #66FF00"> 开始时间: </i> <b id="statrttime"></b>
+                </li>
+                <li class="list-group-item">
+                    <i class="fa fa-hourglass-end" style="color: #FF6633"> 结束时间: </i> <b id="endtime"></b>
+                </li>
+                <li class="list-group-item">
+                    <i class="fa fa-flask" style="color: #7266ba"> 行驶时长: </i> <b id="difftime"></b>
+                </li>
+                <li class="list-group-item">
+                    <i class="fa fa-cogs"> 轨迹设置: </i>
+                    <button type="button" class="btn btn-primary btn-sm" id="normal">正常</button>
+                    <button type="button" class="btn btn-warning btn-sm" id="fast">加快</button>
+                    <button type="button" class="btn btn-danger btn-sm" id="veryfast">非常快</button>
+                    <button type="button" class="btn btn-success btn-sm" id="tracklist">查看列表</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div id="container" style="display: none"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <input type="hidden" id="where" value="{$where}">
+    <div class="alert alert-success" id="examplebtTableEventsResult" role="alert">
+        当前信息为该设备的轨迹信息，默认为<b style="color: red">当天</b>的轨迹信息！
+        <br/><br/>
+        <input id="tracktime" value="{$time}" style="margin-top: -6px" class="form-control layer-date" placeholder="YYYY-MM-DD" onclick="laydate({istime: true, format: 'YYYY-MM-DD',max:laydate.now()})">
+        <button type="button" class="btn btn-w-m btn-info querytrack">选择时间</button>
+        <button type="button" class="btn btn-w-m btn-warning" onclick="returnlink('/index/adv/Deviceanalyze/car_track/dwhere/{$where}')">返回</button>
+    </div>
+    <div class="row">
+        {volist name="tabledata" id="list"}
+        <div class="col-sm-6" style="cursor: pointer;" onclick="hreflink('{$list.lnglat}','{$list.lastaddres}','{$list.firstaddres}','{$list.lasttime}','{$list.firsttime}','{$list.difftime}')">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>起始时间：{$list.lasttime} 至 {$list.firsttime}</h5>
+                </div>
+                <div class="ibox-content">
+                    <h4>轨迹详情</h4>
+                    <p style="height: 85px">
+                        <b style="color: green">起点位置：</b>{$list.lastaddres}
+                        <br/>
+                        <b style="color: red">结束位置：</b>{$list.firstaddres}
+                        <br/>
+                        <b style="color: green">起点时间：</b>{$list.lasttime}
+                        <br/>
+                        <b style="color: red">结束时间：</b>{$list.firsttime}
+
+                    </p>
+                    <div class="row  m-t-sm">
+                        <div class="col-sm-6">
+                            <div class="font-bold">行驶时长:</div>
+                            <b style="color: #7266ba">{$list.difftime}</b>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <div class="font-bold">结束时间:</div>
+                            <b style="color: #7266ba;">{$list.firsttime}</b>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {/volist}
+    </div>
+</div>
+<input type="hidden" id="device_id" value="{$device_id}">
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <!--<a class="play-pause"></a>-->
+    <!--<ol class="indicator"></ol>-->
+</div>
+<!-- 全局js -->
+<script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+<script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<!-- 自定义js -->
+<script src="__STATIC__/adv/js/content.js?v=1.0.0"></script>
+
+<!-- blueimp gallery -->
+<script src="__STATIC__/adv/js/plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
+
+<script src="__STATIC__/adv/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+<!-- layerDate plugin javascript -->
+<script src="__STATIC__/adv/js/plugins/layer/laydate/laydate.js"></script>
+
+<script src="__STATIC__/adv/js/plugins/layer/layer.min.js"></script>
+
+
+<script>
+    var is_track = {$is_track};
+    if(is_track==2){
+        swal("未找到轨迹", "未找到给设备当前的轨迹，请选择时间查找！", "error");
+    }
+    //通过时间搜索轨迹
+    $(".querytrack").click(function(){
+        var device_id = $('#device_id').val();
+        var tracktime = $('#tracktime').val();
+        if(tracktime==''){
+            layer.msg('请选择时间！', {icon: 5});
+            return false;
+        }
+        layer.load(1,{ // 此处1没有意义，随便写个东西
+            icon: 1, // 0~2 ,0比较好看
+            shade: [0.7,'black'] // 黑色透明度0.5背景
+        });
+        var where = $('#where').val();
+        window.location.href = "/index/adv/Deviceanalyze/tracklist?device_id="+device_id+'&time='+tracktime+'&where='+where;
+    })
+    //点击跳转轨迹详情
+    function hreflink(data,lastaddres,firstaddres,lasttime,firsttime,difftime){
+        //隐藏轨迹列表
+        $('.fadeInRight').hide();
+        //显示地图
+        $('#container').show();
+        $('#trackdetail').show();
+        //赋值数据
+        $('#startadd').text(lastaddres);
+        $('#endadd').text(firstaddres);
+        $('#statrttime').text(lasttime);
+        $('#endtime').text(firsttime);
+        $('#difftime').text(difftime);
+        //轨迹数据
+        var trackdata = JSON.parse(data);
+        //地图轨迹
+        var marker, lineArr = [];
+
+        var map = new AMap.Map("container", {
+            resizeEnable: true,
+            center: new AMap.LngLat(trackdata[0][0],trackdata[1][1]),
+            zoom: 17
+        });
+        marker = new AMap.Marker({
+            map: map,
+            position: new AMap.LngLat(trackdata[0][0],trackdata[1][1]),
+            icon: "http://webapi.amap.com/images/car.png",
+            offset: new AMap.Pixel(-26, -13),
+            autoRotation: true
+        });
+        for(var i=0;i<trackdata.length;i++){
+            lineArr.push(new AMap.LngLat(trackdata[i][0],trackdata[i][1]));
+        }
+
+        // 绘制轨迹
+        var polyline = new AMap.Polyline({
+            map: map,
+            path: lineArr,
+            strokeColor: "#00A",  //线颜色
+            // strokeOpacity: 1,     //线透明度
+            strokeWeight: 3,      //线宽
+            // strokeStyle: "solid"  //线样式
+        });
+        var passedPolyline = new AMap.Polyline({
+            map: map,
+            // path: lineArr,
+            strokeColor: "#F00",  //线颜色
+            // strokeOpacity: 1,     //线透明度
+            strokeWeight: 3,      //线宽
+            // strokeStyle: "solid"  //线样式
+        });
+        //设置轨迹速度
+        AMap.event.addDomListener(document.getElementById('normal'), 'click', function() {
+            marker.moveAlong(lineArr,500);
+        }, false);
+        AMap.event.addDomListener(document.getElementById('fast'), 'click', function() {
+            marker.moveAlong(lineArr,5000);
+        }, false);
+        AMap.event.addDomListener(document.getElementById('veryfast'), 'click', function() {
+            marker.moveAlong(lineArr,10000);
+        }, false);
+
+        marker.on('moving',function(e){
+            passedPolyline.setPath(e.passedPath);
+        })
+        map.setFitView();
+        marker.moveAlong(lineArr, 500);
+    }
+    //显示轨迹列表
+    $("#tracklist").click(function(){
+        $('.fadeInRight').show();
+        $('#container').hide();
+        $('#trackdetail').hide();
+    })
+    //返回上一页
+    function returnlink(link) {
+        window.location.href = link;
+    }
+</script>
+<script src="__STATIC__/adv/js/public.js"></script>
+
+</body>
+
+</html>

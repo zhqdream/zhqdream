@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>添加广告图片组</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="__STATIC__/adv/layui/css/layui.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__STATIC__/adv/css/animate.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="__STATIC__/adv/css/plugins/webuploader/webuploader.css">
+    <link rel="stylesheet" type="text/css" href="__STATIC__/adv/css/demo/webuploader-demo.css">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+    
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeIn">
+        <div class="row">
+            <div class="alert alert-success" id="examplebtTableEventsResult" role="alert">
+                该广告组图片会在添加广告时使用！
+            </div>
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>上传广告组图片</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="page-container">
+                            <p>您可以尝试文件拖拽，使用QQ截屏工具，然后激活窗口后粘贴，或者点击添加图片按钮，来添加开机广告.</p>
+                            <div id="uploader" class="wu-example">
+                                <div class="queueList">
+                                    <div id="dndArea" class="placeholder">
+                                        <div id="filePicker"></div>
+                                        <p>或将照片拖到这里，最多可上传10张图片</p>
+                                    </div>
+                                </div>
+                                <div class="statusBar" style="display:none;">
+                                    <div class="progress">
+                                        <span class="text">0%</span>
+                                        <span class="percentage"></span>
+                                    </div>
+                                    <div class="info"></div>
+                                    <div class="btns">
+                                        <div id="filePicker2"></div>
+                                        <div class="uploadBtn">开始上传</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-sm-12" style="display: none" id="advinfo">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>添加图片组数据</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="imggroupsignupForm" method="post" action="/index/adv/adv/add_imggroupinfo">
+                            <input type="hidden" name="adv_img" id="oss_url">
+                            <input type="hidden" name="img_width" id="img_width">
+                            <input type="hidden" name="img_height" id="img_height">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">图片组标题：</label>
+                                <div class="col-sm-8">
+                                    <input id="group_title" name="group_title" class="form-control" type="text" aria-required="true" aria-invalid="false" class="valid">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">图片组描述：</label>
+                                <div class="col-sm-8">
+                                    <input id="group_desc" name="group_desc" class="form-control" type="text" aria-required="true" aria-invalid="false" class="valid">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">图片类型：</label>
+                                <div class="col-sm-8">
+                                    <div class="radio">
+                                        <label style="width: 100px">
+                                            <input type="radio" class="radio" name="adv_type" value="1" checked>开机广告
+                                        </label>
+                                        <label style="width: 100px">
+                                            <input type="radio" class="radio" name="adv_type" value="2">弹框广告
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-8 col-sm-offset-3">
+                                    <button class="btn btn-primary" type="submit">提交</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- 全局js -->
+    <script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+    <script src="__STATIC__/adv/js/content.js?v=1.0.0"></script>
+
+
+    <!-- Web Uploader -->
+    <script type="text/javascript">
+        // 添加全局站点信息
+        var BASE_URL = 'js/plugins/webuploader';
+    </script>
+    <script type="text/javascript" src="__STATIC__/adv/layui/layui.all.js"></script>
+    <script src="__STATIC__/adv/js/plugins/webuploader/webuploader.min.js?v=1.1"></script>
+
+    <script src="__STATIC__/adv/js/demo/webuploader-demo.js"></script>
+
+    <!-- jQuery Validation plugin javascript-->
+    <script src="__STATIC__/adv/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="__STATIC__/adv/js/plugins/validate/messages_zh.min.js"></script>
+    <script src="__STATIC__/adv/js/demo/form-validate-demo.js?v=1.0"></script>
+    <!-- layerDate plugin javascript -->
+    <script src="__STATIC__/adv/js/plugins/layer/laydate/laydate.js"></script>
+    <script src="__STATIC__/adv/js/public.js"></script>
+
+</body>
+
+</html>

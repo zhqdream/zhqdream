@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="__STATIC__/adv/img/reglink.ico">
+    <link href="__STATIC__/adv/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__STATIC__/adv/css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="__STATIC__/adv/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__STATIC__/adv/css/style.css?v=4.1.0" rel="stylesheet">
+</head>
+<body style="height: 100%; margin: 0">
+<div id="container" style="height: 100%"></div>
+<div id="container1" style="position:absolute; top:68%; left:0; width: 35%;height: 30%;">
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight" style="position:absolute; top:0; left:0%;padding: 0px;opacity:0.7;">
+        <div class="col-sm-4" style="width: 100%;">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title" style="background-color:#404a59;color: white">
+                    <h5>筛选条件</h5>
+                    <h5 style="float: right;margin: -3px -8px 0px;" onclick="nationwide()"><button type="button" style="padding: 0;margin: 0" class="btn btn-w-m btn-info">全国设备</button></h5>
+                </div>
+                <div class="ibox-content" style="background-color:#404a59;">
+                    <div>
+                    {if condition="$role_id == 1"}
+                    <div class="form-group">
+                        <label class="font-noraml" style="color: #ccc">选择厂商</label>
+                        <div class="input-group">
+                            <select data-placeholder="选择厂商" id="selcustomer" class="chosen-select" onchange="getmanulist()" style="width: 200px;" tabindex="2">
+                                <option value="">请选择厂商</option>
+                                {volist name="$customerlist" id="cus_list"}
+                                <option value="{$cus_list.id}" hassubinfo="true" {if condition="$customer_text == $cus_list.customer_name"} selected {/if}>{$cus_list.customer_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-noraml" style="color: #ccc">选择型号</label>
+                        <div class="input-group">
+                            <select data-placeholder="选择型号" id="selmanu" class="chosen-select" style="width: 200px;" multiple tabindex="4">
+                            </select>
+                        </div>
+                    </div>
+                    {else/}
+                    <div class="form-group">
+                        <label class="font-noraml" style="color: #ccc">选择型号</label>
+                        <div class="input-group">
+                            <select data-placeholder="选择型号" id="selmanu" class="chosen-select" style="width: 200px;" multiple tabindex="4">
+                                {volist name="$channel" id="channellist"}
+                                <option value="{$channellist.customer}" hassubinfo="true" {volist name="$commonchannel" id="commonlist"} {if condition="$channellist.customer == $commonlist"} selected {/if} {/volist}>{$channellist.customer}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    {/if}
+                    <button type="button" class="btn btn-primary block full-width m-b screen_btn">筛选</button>
+                </div>
+            </div>
+    </div>
+</div>
+<script type="text/javascript" src="__STATIC__/adv/js/plugins/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="__STATIC__/adv/js/plugins/echarts/china.js"></script>
+
+<script type="text/javascript">
+    //分布图
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var app = {};
+    option = null;
+
+
+    var geoCoordMap = {$geoCoordMap};
+    var data = {$convertData}
+
+    var convertData = function (data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+            var geoCoord = geoCoordMap[data[i].name];
+            if (geoCoord) {
+                res.push({
+                    name: data[i].name,
+                    value: geoCoord.concat(data[i].value)
+                });
+            }
+        }
+        return res;
+    };
+
+    var convertedData = [
+        convertData(data),
+        convertData(data.sort(function (a, b) {
+            return b.value - a.value;
+        }).slice(0, 7))
+    ];
+
+
+    option = {
+        backgroundColor: '#404a59',
+        animation: true,
+        animationDuration: 1000,
+        animationEasing: 'cubicInOut',
+        animationDurationUpdate: 1000,
+        animationEasingUpdate: 'cubicInOut',
+        title: [
+            {
+                top:"2%",
+                // text: '全国设备分布图',
+                left: 'center',
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+            {
+                id: 'statistic',
+                right: 120,
+                top: 40,
+                width: 100,
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 16
+                }
+            }
+        ],
+        //右上角的工具
+        toolbox: {
+            iconStyle: {
+                normal: {
+                    borderColor: '#fff'
+                },
+                emphasis: {
+                    borderColor: '#b1e4ff'
+                }
+            },
+            show:false
+        },
+        brush: {
+            outOfBrush: {
+                color: '#abc'
+            },
+            brushStyle: {
+                borderWidth: 2,
+                color: 'rgba(0,0,0,0.2)',
+                borderColor: 'rgba(0,0,0,0.5)',
+            },
+            seriesIndex: [0, 1],
+            throttleType: 'debounce',
+            throttleDelay: 300,
+            geoIndex: 0
+        },
+        geo: {
+            map: 'china',
+            top:"55%",
+            left: '55%',
+            right: '30%',
+            center: [117.98561551896913, 31.205000490896193],
+            zoom: 4.5,
+            label: {
+                emphasis: {
+                    show: false
+                }
+            },
+            roam: true,
+            itemStyle: {
+                normal: {
+                    areaColor: '#323c48',
+                    borderColor: '#111'
+                },
+                emphasis: {
+                    areaColor: '#2a333d'
+                }
+            }
+        },
+        //悬浮框的数据
+        tooltip : {
+            trigger: 'item',
+            formatter:function(params)//数据格式
+            {
+                if(typeof params.data.name !='undefined' && typeof params.value[2] != 'undefined'){
+                    return params.data.name+': 共有'+params.value[2]+'台设备';
+                }else{
+                    return params['name']+': 共有'+params['value']+'台设备';
+                }
+
+            }
+        },
+        grid: {
+            right: 40,
+            top: 100,
+            bottom: 40,
+            width: '30%'
+        },
+        xAxis: {
+            type: 'value',
+            scale: false,
+            position: 'top',
+            boundaryGap: false,
+            splitLine: {show: false},
+            axisLine: {show: false},
+            axisTick: {show: false},
+            axisLabel: {margin: 2, textStyle: {color: '#aaa'}},
+        },
+        yAxis: {
+            type: 'category',
+            // name: '设备数量(最多显示40个城市)：',
+            nameGap: 17,
+            axisLine: {show: false, lineStyle: {color: '#ddd'}},
+            axisTick: {show: false, lineStyle: {color: '#ddd'}},
+            axisLabel: {interval: 0, textStyle: {color: '#ddd'}},
+            data: []
+        },
+        //标点数据
+        series : [
+            {
+                name: '城市设备:',
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                data: convertedData[0],
+                symbolSize: function (val) {
+                    // return Math.max(val[2] / 10, 8);
+                    return 10;
+                },
+
+                label: {
+                    normal: {
+                        formatter: '{b}',
+                        position: 'right',
+                        show: false
+                    },
+                    emphasis: {
+                        show: true
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#ddb926'
+                    }
+                }
+            },
+            {
+                name: '设备最多的城市:',
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                data: convertedData[1],
+                symbolSize: function (val) {
+                    // return Math.max(val[2] / 10, 8);
+                    return 20;
+                },
+                // showEffectOn: 'render',
+                showEffectOn: 'render',
+                rippleEffect: {
+                    brushType: 'stroke'
+                },
+                hoverAnimation: true,
+                label: {
+                    normal: {
+                        formatter: '{b}',
+                        position: 'right',
+                        show: true
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#f4e925',
+                        shadowBlur: 10,
+                        shadowColor: '#333'
+                    }
+                },
+                zlevel: 1
+            },
+            {
+                id: 'bar',
+                zlevel: 2,
+                type: 'bar',
+                symbol: 'none',
+                itemStyle: {
+                    normal: {
+                        color: '#ddb926'
+                    }
+                },
+                data: []
+            }
+        ]
+    };
+
+    myChart.setOption(option);
+    //绑定地图点击事件
+    myChart.on('click', clickmapinfo);
+    //点击当前城市获取设备信息
+    function clickmapinfo(params) {
+        var province = params.name;
+        if(province.indexOf("市")!=-1 || province.indexOf("州")!=-1 || province.indexOf("区")!=-1){
+            layer.msg('您只能查看省份的数据！', {icon: 5});
+            return false;
+        }
+        var result = getdeviceinfo(province);
+        if(!result.content.cityinfo){
+            layer.msg('未找到该地区的设备！', {icon: 5});
+            return false;
+        }
+        var dataAll = result.content.devnum;
+        var yAxisData = result.content.cityinfo;
+        var devcount = result.content.devcount;
+        this.setOption({
+            title:[
+                {
+                    text:province+"省 共有"+devcount+"台设备",
+                    right: 120,
+                    top: 40,
+                    width: 100,
+                    textStyle: {
+                        color: '#fff',
+                        fontSize: 16
+                    }
+                }
+            ],
+            grid: {
+                right: 30,
+                top: 100,
+                bottom: 40,
+                width: '15%'
+            },
+            xAxis: [
+                {gridIndex: 0, axisTick: {show:false},axisLabel: {show:false},splitLine: {show:false},axisLine: {show:false }},
+            ],
+            yAxis: [
+                {  gridIndex: 0, interval:0,data:yAxisData,
+                    axisTick: {show:false}, axisLabel: {show:true},splitLine: {show:false},
+                    axisLine: {show:true,lineStyle:{color:"#ddb926"}},
+                }
+            ],
+            series: [
+                {
+                    id: 'bar',
+                    name: '设备信息',
+                    type: 'bar',xAxisIndex: 0,yAxisIndex: 0,barWidth:'45%',
+                    itemStyle:{normal:{color:'#ddb926'}},
+                    label:{normal:{show:true, position:"right",textStyle:{color:"#9EA7C4"}}},
+                    data: dataAll,
+                }
+
+            ]
+        });
+    }
+    //选择全国的设备信息
+    function nationwide() {
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        var result = getdeviceinfo(10000);
+        var dataAll = result.content.devnum;
+        var yAxisData = result.content.cityinfo;
+        var devcount = result.content.devcount;
+        var option = {
+            title:[
+                {
+                    text:"全国 共有"+devcount+"台设备",
+                    right: 120,
+                    top: 40,
+                    width: 100,
+                    textStyle: {
+                        color: '#fff',
+                        fontSize: 16
+                    }
+                }
+            ],
+            grid: {
+                right: 30,
+                top: 100,
+                bottom: 40,
+                width: '15%'
+            },
+            xAxis: [
+                {gridIndex: 0, axisTick: {show:false},axisLabel: {show:false},splitLine: {show:false},axisLine: {show:false }},
+            ],
+            yAxis: [
+                {  gridIndex: 0, interval:0,data:yAxisData,
+                    axisTick: {show:false}, axisLabel: {show:true},splitLine: {show:false},
+                    axisLine: {show:true,lineStyle:{color:"#ddb926"}},
+                }
+            ],
+            series: [
+                {
+                    id: 'bar',
+                    name: '设备信息',
+                    type: 'bar',xAxisIndex: 0,yAxisIndex: 0,barWidth:'45%',
+                    itemStyle:{normal:{color:'#ddb926'}},
+                    label:{normal:{show:true, position:"right",textStyle:{color:"#9EA7C4"}}},
+                    data: dataAll,
+                }
+
+            ]
+        };
+        myChart.setOption(option);
+    }
+    //通过省份获取设备数据
+    var devicedata = [];
+    function getdeviceinfo(province) {
+        var channel = '';
+        $('.chosen-choices li').each(function(index) {
+            if($(this).text()!=''){
+                channel+='"'+$(this).text()+'"'+','
+            }
+
+        });
+        $.ajax({
+            url:"/index/adv/home/getcitydevice",
+            async: false,
+            contentType: "application/x-www-form-urlencoded; charset=utf-8",
+            type:"post",
+            dataType:"json",
+            cache: false,
+            data:{
+                province:province,
+                querychannel:channel
+            },
+            success:function(result){
+                var result = $.parseJSON(result);
+                if(result.code == 200){
+                    devicedata = result;
+                }
+            },
+            error:function() {
+                return false;
+            }
+        });
+        return devicedata;
+    }
+
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+
+    //设备生产/激活饼状图
+    var production = {$production};
+    var active = {$active};
+    var devicecount = {$devicecount};
+    var dom1 = document.getElementById("container1");
+    var myChart1 = echarts.init(dom1);
+    option1 = null;
+    option1 = {
+        backgroundColor:'rgba(128, 128, 128, 0)',
+        title : {
+            text: '设备总数：'+devicecount+' 台',
+            // x:'center'
+            left: 15,
+            top: 15,
+            textStyle: {
+                color: '#ccc'
+            }
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b}"
+        },
+        // legend: {
+        //     orient: 'vertical',
+        //     left: 'right'
+        // },
+        series : [
+            {
+                name: '设备分析',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[
+                    {value:production, name:'未激活设备'+'('+production+' 台)'},
+                    {value:active, name:'激活设备'+'('+active+' 台)'}
+                ],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        // shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ],
+        color: ['rgb(200,200,169)','rgb(131,175,155)']
+    };
+
+    myChart1.setOption(option1);
+
+</script>
+<script src="__STATIC__/adv/js/jquery.min.js?v=2.1.4"></script>
+<script type="text/javascript" src="__STATIC__/adv/layui/layui.all.js"></script>
+<script>
+    if({$role_id}==1){
+        //回显查找的厂商型号
+        if({$querychannel}){
+            var querychannel = {$querychannel};
+            var quchannel = {$quchannel};
+            var channelarr = querychannel.split(",");
+            var str = '';
+            for(var i=0;i<quchannel.length;i++){
+                var reg = new RegExp("'","g");
+                str+="<option value="+quchannel[i]+">"+quchannel[i]+"</option>";
+            }
+            $("#selmanu").append(str);
+            for(var j=0;j<quchannel.length;j++){
+                for(var k=0;k<channelarr.length;k++){
+                    if(quchannel[j]==channelarr[k]){
+                        $("#selmanu").find("option[value="+channelarr[k]+"]").attr("selected",true);
+                    }
+                }
+            }
+        }
+
+    }
+    //通过厂商获取厂商型号
+    function getmanulist() {
+        var customer_id = $('#selcustomer option:selected').val();
+        if(customer_id==''){
+            $('#selmanu').children().remove();
+            $("#selmanu").trigger("chosen:updated");
+            return false;
+        }
+        $.ajax({
+            url:"/index/adv/home/getmanulist",
+            type:"post",
+            dataType:"json",
+            data:{
+                customer_id:customer_id,
+            },
+            success:function(result){
+                var result = $.parseJSON(result);
+                var manu = result.content;
+                $('#selmanu').children().remove();
+                $("#selmanu").trigger("chosen:updated");
+                if(result.code == 200){
+                    var str = '';
+                    for(var i=0;i<manu.length;i++){
+                        str+='<option value="'+manu[i].customer+'">'+manu[i].customer+'</option>';
+                    }
+                    $('#selmanu').append(str);
+                    $("#selmanu").trigger("chosen:updated");
+                }
+            },
+            error:function() {
+                return false;
+            }
+        });
+    }
+    $('.screen_btn').click(function () {
+        var customer_id = $('#selcustomer option:selected').val();
+        var customer_text = $('#selcustomer option:selected').text();
+        var menuval = $('#selmanu option:selected').val();
+        if(!menuval){
+            layer.msg('未选择筛选条件！', {icon: 5});
+            return false;
+        }
+        var channel = '';
+        var channelstr = '';
+        $('.chosen-choices li').each(function(index) {
+            if($(this).text()!=''){
+                channel+='"'+$(this).text()+'"'+','
+                channelstr+=$(this).text()+',';
+            }
+
+        });
+        layer.load(1,{ // 此处1没有意义，随便写个东西
+            icon: 1, // 0~2 ,0比较好看
+            shade: [0.7,'black'] // 黑色透明度0.5背景
+        });
+        window.location.href = "/index/adv/home/index?querychannel="+channel+'&customer_text='+customer_text+'&channelstr='+channelstr+'&customer_id='+customer_id;
+    })
+</script>
+<!-- 全局js -->
+<script src="__STATIC__/adv/js/bootstrap.min.js?v=3.3.6"></script>
+
+<script src="__STATIC__/adv/js/plugins/chosen/chosen.jquery.js"></script>
+
+<script src="__STATIC__/adv/js/demo/form-advanced-demo.js"></script>
+<script src="__STATIC__/adv/js/public.js"></script>
+</body>
+</html>
