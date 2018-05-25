@@ -243,4 +243,7 @@ class Home extends Base
         $devicegps = Db::table('device_last_gps')->query("SELECT g.`device_id`,g.`lng`,g.`lat`,g.`address`,g.`city`,d.channel,count(g.device_id) as num FROM device_last_gps as g INNER JOIN device_info as d ON g.device_id = d.device_id WHERE $where GROUP BY g.`city` ");
         return json_encode_conf(200,$devicegps);
     }
+    public function test(){
+        
+    }
 }
